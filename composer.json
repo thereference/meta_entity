@@ -1,0 +1,8 @@
+{
+    "name": "thereference/meta_entity",
+    "description": "Provides the meta_entity module.",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev",
+    "require": {}
+}

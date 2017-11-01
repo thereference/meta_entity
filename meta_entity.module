@@ -1,0 +1,72 @@
+<?php
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+///**
+// * Implements hook_entity_base_field_info().
+// *
+// * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+// *
+// * @return mixed
+// */
+//function meta_entity_entity_base_field_info(EntityTypeInterfac $entity_type) {
+//  if ($entity_type->id() === 'taxonomy_term' || $entity_type->id() === 'node') {
+//    $fields['path'] = BaseFieldDefinition::create('path')
+//      ->setLabel(t('URL alias'))
+//      ->setTranslatable(TRUE)
+//      ->setDisplayOptions('form', array(
+//        'type' => 'path',
+//        'weight' => 30,
+//      ))
+//      ->setDisplayConfigurable('form', TRUE)
+//      ->setComputed(TRUE);
+//
+//    return $fields;
+//  }
+//}
+//
+
+/**
+ * Implements hook_field_widget_form_alter()
+ */
+function meta_entity_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+//  $config = \Drupal::config('did_metatag.settings');
+//  $enabled_entity_types = $config->get('enabled_entity_types');
+//  if (isset($enabled_entity_types['entity_types'][$entity_type->id()]) && $enabled_entity_types['entity_types'][$entity_type->id()]) {
+//    $bundles = $config->get('enabled_' . $entity_type->id() . '_types');
+//    if (isset($bundles[$entity_type->id()][$bundle]) && $bundles[$entity_type->id()][$bundle]) {
+//      $fields['metatag'] = BaseFieldDefinition::create('metatag')
+//        ->setCustomStorage(TRUE)
+//        ->setName(t('Metatag'))
+//        ->setLabel(t('Metatag'))
+//        ->setRevisionable(FALSE)
+//        ->setTranslatable(TRUE)
+//        ->setDisplayOptions('form', array(
+//          'weight' => 30,
+//        ))
+//        ->setDisplayConfigurable('form', TRUE)
+//        ->setComputed(TRUE);
+//      return $fields;
+//    }
+//  }
+
+  $s = '';
+
+  $fields['metadata'] = BaseFieldDefinition::create('metadata')
+    ->setCustomStorage(TRUE)
+    ->setName(t('Metadata'))
+    ->setLabel(t('Metadata'))
+    ->setRevisionable(FALSE)
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'weight' => 30,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setComputed(TRUE);
+  return $fields;
+
+
+}

@@ -1,0 +1,7 @@
+name: Meta entity
+type: module
+description: Meta entity
+core: 8.x
+package: SEO
+dependencies:
+ - inline_entity_form
