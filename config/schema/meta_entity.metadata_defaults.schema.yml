@@ -1,0 +1,12 @@
+meta_entity.metadata_defaults.*:
+  type: config_entity
+  label: 'metadata defaults'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    defaults:
+      type: sequence
+      label: 'Defaults'
+      sequence:
+        type: metadata.metatag_defaults.[%key]

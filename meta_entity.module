@@ -1,72 +1,117 @@
 <?php
 
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
-
-///**
-// * Implements hook_entity_base_field_info().
-// *
-// * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-// *
-// * @return mixed
-// */
-//function meta_entity_entity_base_field_info(EntityTypeInterfac $entity_type) {
-//  if ($entity_type->id() === 'taxonomy_term' || $entity_type->id() === 'node') {
-//    $fields['path'] = BaseFieldDefinition::create('path')
-//      ->setLabel(t('URL alias'))
-//      ->setTranslatable(TRUE)
-//      ->setDisplayOptions('form', array(
-//        'type' => 'path',
-//        'weight' => 30,
-//      ))
-//      ->setDisplayConfigurable('form', TRUE)
-//      ->setComputed(TRUE);
-//
-//    return $fields;
-//  }
-//}
-//
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\meta_entity\Entity\MetadataDefaults;
 
 /**
- * Implements hook_field_widget_form_alter()
+ * Implements hook__entity_bundle_field_info().
  */
-function meta_entity_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-//  $config = \Drupal::config('did_metatag.settings');
-//  $enabled_entity_types = $config->get('enabled_entity_types');
-//  if (isset($enabled_entity_types['entity_types'][$entity_type->id()]) && $enabled_entity_types['entity_types'][$entity_type->id()]) {
-//    $bundles = $config->get('enabled_' . $entity_type->id() . '_types');
-//    if (isset($bundles[$entity_type->id()][$bundle]) && $bundles[$entity_type->id()][$bundle]) {
-//      $fields['metatag'] = BaseFieldDefinition::create('metatag')
-//        ->setCustomStorage(TRUE)
-//        ->setName(t('Metatag'))
-//        ->setLabel(t('Metatag'))
-//        ->setRevisionable(FALSE)
-//        ->setTranslatable(TRUE)
-//        ->setDisplayOptions('form', array(
-//          'weight' => 30,
-//        ))
-//        ->setDisplayConfigurable('form', TRUE)
-//        ->setComputed(TRUE);
-//      return $fields;
-//    }
-//  }
+function meta_entity_entity_bundle_field_info(
+  \Drupal\Core\Entity\EntityTypeInterface $entity_type,
+  $bundle,
+  array $base_field_definitions
+) {
+  if ($entity_type->id() != 'node') {
+    return;
+  }
 
-  $s = '';
+  $config_key = 'instance.' . $entity_type->getBundleEntityType(
+    ) . '.' . $bundle;
+  $defaults = MetadataDefaults::load($config_key);
 
-  $fields['metadata'] = BaseFieldDefinition::create('metadata')
-    ->setCustomStorage(TRUE)
-    ->setName(t('Metadata'))
-    ->setLabel(t('Metadata'))
-    ->setRevisionable(FALSE)
+  if (!$defaults) {
+    return;
+  }
+
+  $enabled_type = $defaults->getDefault('enabled');
+  if (!$entity_type || $enabled_type == '_none') {
+    return;
+  }
+
+  $fields['metadata'] = BaseFieldDefinition::create('entity_reference')
+    ->setName(new TranslatableMarkup('Metadata'))
+    ->setLabel(new TranslatableMarkup('Metadata'))
+    ->setRevisionable(TRUE)
     ->setTranslatable(TRUE)
-    ->setDisplayOptions('form', array(
-      'weight' => 30,
-    ))
-    ->setDisplayConfigurable('form', TRUE)
-    ->setComputed(TRUE);
+    ->setSetting('target_type', 'metadata')
+    ->setSetting('handler_settings', ['target_bundles' => [$enabled_type]])
+    ->setDisplayOptions(
+      'form',
+      [
+        'weight' => 30,
+        'type' => 'metadata_inline_entity',
+      ]
+    )
+    ->setDisplayConfigurable('form', TRUE);
   return $fields;
+}
 
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function meta_entity_entity_base_field_info(
+  \Drupal\Core\Entity\EntityTypeInterface $entity_type
+) {
+  if ($entity_type->id() != 'node') {
+    return;
+  }
 
+  $fields['metadata'] = BaseFieldDefinition::create('entity_reference')
+    ->setName(new TranslatableMarkup('Metadata'))
+    ->setLabel(new TranslatableMarkup('Metadata'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE);
+  return $fields;
+}
+
+/**
+ * Implements hook_form_alter.
+ *
+ * Adds sitemap settings to entity types that are supported via plugins.
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
+function meta_entity_form_alter(
+  &$form,
+  FormStateInterface $form_state,
+  $form_id
+) {
+
+  /**
+   * @var Drupal\simple_sitemap\Form\FormHelper $f
+   */
+  $form_helper = \Drupal::service('meta_entity.form_helper');
+  if (!$form_helper->processForm($form_state)) {
+    return;
+  }
+
+  $form['metadata'] = [
+    '#type' => 'details',
+    '#group' => isset($form['additional_settings']) ? 'additional_settings' : 'advanced',
+    '#title' => t('Metadata'),
+    '#description' => new TranslatableMarkup(
+      'Metadata settings for this entity'
+    ),
+    '#tree' => TRUE,
+  ];
+
+  $form_helper->displayMetadataSettings($form['metadata']);
+
+  $form['actions']['submit']['#submit'][] = 'meta_entity_metadata_settings_submit';
+}
+
+function meta_entity_metadata_settings_submit(
+  $form,
+  FormStateInterface &$form_state
+) {
+  $form_helper = \Drupal::service('meta_entity.form_helper');
+  if (!$form_helper->processForm($form_state)) {
+    return;
+  }
+
+  $form_helper->processFormSubmit($form_state);
 }

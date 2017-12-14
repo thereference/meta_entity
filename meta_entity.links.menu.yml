@@ -1,0 +1,5 @@
+entity.metadata_type.collection:
+  title: 'Metadata'
+  route_name: entity.metadata_type.collection
+  description: 'Configure metadata entities.'
+  parent: system.admin_config_search
