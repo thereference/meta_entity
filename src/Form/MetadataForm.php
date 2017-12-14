@@ -17,7 +17,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\meta_entity\Form
  */
 class MetadataForm extends ContentEntityForm {
-
+  
   /**
    * {@inheritdoc}
    */

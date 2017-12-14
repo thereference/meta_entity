@@ -1,0 +1,6 @@
+entity.metadata_type.add_form:
+  route_name: 'entity.metadata_type.add_form'
+  title: 'Add metadata entity type'
+  appears_on:
+    - entity.metadata_type.collection
+

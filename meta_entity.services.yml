@@ -1,0 +1,7 @@
+services:
+  meta_entity.token:
+    class: Drupal\meta_entity\Utility\MetadataToken
+    arguments: ['@token']
+  meta_entity.form_helper:
+    class: Drupal\meta_entity\Utility\FormHelper
+    arguments: ['@entity_type.manager', '@current_user', '@entity_field.manager']

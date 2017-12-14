@@ -23,8 +23,6 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "uuid" = "uuid",
  *     "title" = "title",
  *     "description" = "description",
- *     "image" = "image",
- *     "parent" = "parent",
  *   },
  *   handlers = {
  *     "form" = {
@@ -34,7 +32,8 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *     "route_provider" = {
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
- *     "storage_schema" = "Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema",
+ *     "storage_schema" =
+ *   "Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema",
  *     "access" = "Drupal\meta_entity\MetadataAccessControlHandler",
  *     "translation" = "Drupal\content_translation\ContentTranslationHandler"
  *   },
@@ -47,65 +46,46 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
  *   field_ui_base_route = "entity.metadata_type.edit_form",
  * )
  */
-//
-//*     "edit-form" = "/admin/structure/settings_type/settings/{settings}/edit",
-// *     "collection" = "/admin/structure/settings_type/settings",
-// *     "canonical" = "/admin/structure/settings_type/settings/{settings}",
 class Metadata extends ContentEntityBase implements MetadataInterface {
 
   /**
    * {@inheritdoc}
    */
-  public function getParent() {
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setParent(Entity $entity) {
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function loadByParent(Entity $entity) {
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type
+  ) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
     if ($entity_type->hasKey('title')) {
-      $fields[$entity_type->getKey('title')] = BaseFieldDefinition::create('string')
+      $fields[$entity_type->getKey('title')] = BaseFieldDefinition::create(
+        'string'
+      )
         ->setLabel(new TranslatableMarkup('Title'))
+        ->setRequired(TRUE)
         ->setTranslatable(TRUE)
         ->setDisplayConfigurable('form', TRUE);
     }
 
     if ($entity_type->hasKey('description')) {
-      $fields[$entity_type->getKey('description')] = BaseFieldDefinition::create('text_long')
+      $fields[$entity_type->getKey(
+        'description'
+      )] = BaseFieldDefinition::create('string_long')
         ->setLabel(new TranslatableMarkup('Description'))
+        ->setRequired(TRUE)
         ->setTranslatable(TRUE)
         ->setDisplayConfigurable('form', TRUE);
     }
 
-    if ($entity_type->hasKey('image')) {
-      $fields[$entity_type->getKey('image')] = BaseFieldDefinition::create('image')
-        ->setLabel(new TranslatableMarkup('Image'))
-        ->setTranslatable(TRUE)
-        ->setDisplayConfigurable('form', TRUE);
-    }
-
-    if ($entity_type->hasKey('parent')) {
-      $fields[$entity_type->getKey('parent')] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(new TranslatableMarkup('Parent'))
-        ->setRequired(TRUE);
-    }
+    $fields['image'] = BaseFieldDefinition::create('image')
+      ->setLabel(new TranslatableMarkup('Image'))
+      ->setRequired(FALSE)
+      ->setTranslatable(TRUE)
+      ->setSettings([
+        'alt_field' => 0,
+        'alt_field_required' => 0,
+        'title_field' => 0,
+        'title_field_required' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
     return $fields;
   }
