@@ -17,10 +17,12 @@ class FormHelper {
 
   protected static $allowedEntityTypes = [
     'node_type' => 'Node type',
+    'taxonomy_vocabulary' => 'Taxonomy vocabulary',
   ];
 
-  protected static $mappedInstances = [
+  public static $mappedInstances = [
     'node_type' => 'node',
+    'taxonomy_vocabulary' => 'taxonomy_term',
   ];
 
   protected static $allowedFormOperations = [
@@ -185,7 +187,7 @@ class FormHelper {
   protected function supports() {
 
     // Do not alter the form if user lacks certain permissions.
-    if (!$this->currentUser->hasPermission('administer metadata settings')) {
+    if (!$this->currentUser->hasPermission('administer metadata')) {
       return FALSE;
     }
 

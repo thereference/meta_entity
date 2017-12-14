@@ -1,0 +1,4 @@
+'administer metadata':
+  title: Administer metadata
+  description: Control the metadata entity types and there default values.
+  'restrict access': TRUE
