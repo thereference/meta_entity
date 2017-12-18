@@ -116,3 +116,67 @@ function meta_entity_metadata_settings_submit(
 
   $form_helper->processFormSubmit($form_state);
 }
+
+/**
+ * Implements template_preprocess_html().
+ */
+function meta_entity_preprocess_html(&$variables) {
+  if (!meta_entity_is_current_route_supported()) {
+    return;
+  }
+
+  $attachments = drupal_static('metadata_attachments');
+  if (is_null($attachments)) {
+    $attachments = metatag_get_tags_from_route();
+
+
+
+  }
+
+//  if (!$attachments) {
+//    return;
+//  }
+//
+//  // Load the page title.
+//  if (!empty($attachments['#attached']['html_head'])) {
+//    foreach ($attachments['#attached']['html_head'] as $key => $attachment) {
+//      if (!empty($attachment[1]) && $attachment[1] == 'title') {
+//        // It's safe to access the value directly because it was already
+//        // processed in MetatagManager::generateElements().
+//        $variables['head_title_array'] = [];
+//        // Empty head_title to avoid the site name and slogan to be appended to
+//        // the meta title.
+//        $variables['head_title'] = [];
+//        $variables['head_title']['title'] = html_entity_decode($attachment[0]['#attributes']['content'], ENT_QUOTES);
+//        // Original:
+//        // $variables['head_title_array']['title'] = $attachment[0]['#attributes']['content'];
+//        // $variables['head_title'] = implode(' | ', $variables['head_title_array']);
+//        break;
+//      }
+//    }
+//  }
+}
+
+/**
+ * Identify whether the current route is supported by the module.
+ *
+ * @return bool
+ *   TRUE if the current route is supported.
+ */
+function meta_entity_is_current_route_supported() {
+   // If upgrading, we need to wait for database updates to complete.
+  /** @var  \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager */
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $fieldDefinitions = $entity_field_manager->getBaseFieldDefinitions('node');
+  $is_ready = isset($fieldDefinitions['metadata']);
+  if (!$is_ready) {
+    return FALSE;
+  }
+
+  // Ignore admin paths.
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
