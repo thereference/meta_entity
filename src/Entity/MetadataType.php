@@ -36,7 +36,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
  *   },
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "administer metadata",
  *   links = {
  *     "canonical" = "/admin/config/search/metadata/{metadata_type}",
  *     "add-form" = "/admin/config/search/metadata/add",

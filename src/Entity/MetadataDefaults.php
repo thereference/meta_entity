@@ -11,7 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   id = "metadata_defaults",
  *   label = @Translation("Metadata defaults"),
  *   config_prefix = "metadata_defaults",
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "administer metadata",
  *   entity_keys = {
  *     "id" = "id",
  *   }

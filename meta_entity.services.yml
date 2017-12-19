@@ -5,3 +5,6 @@ services:
   meta_entity.form_helper:
     class: Drupal\meta_entity\Utility\FormHelper
     arguments: ['@entity_type.manager', '@current_user', '@entity_field.manager']
+  meta_entity.manager:
+    class: Drupal\meta_entity\Utility\MetadataManager
+    arguments: ['@meta_entity.token', '@logger.factory']

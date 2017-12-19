@@ -24,6 +24,7 @@ class MetadataWidget extends InlineEntityFormSimple {
 
   protected static $mappedInstances = [
     'node' => 'node_type',
+    'taxonomy_term' => 'taxonomy_vocabulary',
   ];
 
   /**
@@ -66,11 +67,9 @@ class MetadataWidget extends InlineEntityFormSimple {
       $values['description'] = $defaults->getDefault('description');
 
       // Convert the stored UUID to a FID.
-      $fids = [];
       $uuid = $defaults->getDefault('image');
 
       if ($uuid && ($file = \Drupal::entityManager()->loadEntityByUuid('file', $uuid))) {
-        $fids[0] = $file->id();
         $values['image'] = $file;
       }
 
