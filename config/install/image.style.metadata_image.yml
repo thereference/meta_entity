@@ -1,0 +1,13 @@
+langcode: nl
+status: true
+dependencies: {  }
+name: metadata_image
+label: metadata_image
+effects:
+  48148687-7425-4389-b6f3-01b9ab245912:
+    uuid: 48148687-7425-4389-b6f3-01b9ab245912
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 1200
+      height: 630

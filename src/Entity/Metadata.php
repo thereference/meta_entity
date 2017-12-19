@@ -3,7 +3,6 @@
 namespace Drupal\meta_entity\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -79,14 +78,42 @@ class Metadata extends ContentEntityBase implements MetadataInterface {
       ->setLabel(new TranslatableMarkup('Image'))
       ->setRequired(FALSE)
       ->setTranslatable(TRUE)
-      ->setSettings([
-        'alt_field' => 0,
-        'alt_field_required' => 0,
-        'title_field' => 0,
-        'title_field_required' => 0,
-      ])
+      ->setSettings(
+        [
+          'alt_field' => 0,
+          'alt_field_required' => 0,
+          'title_field' => 0,
+          'title_field_required' => 0,
+        ]
+      )
       ->setDisplayConfigurable('form', TRUE);
 
     return $fields;
+  }
+
+  /**
+   * Get the title that is filled in for this entity.
+   */
+  public function getTitle() {
+    return $this->get('title')->getString();
+  }
+
+  /**
+   * Get the description that is filled in for this entity.
+   */
+  public function getDescription() {
+    return $this->get('description')->getString();
+  }
+
+  /**
+   * Get the file that is uploaded in for this entity.
+   */
+  public function getImage() {
+
+    if ($this->get('image')->isEmpty()) {
+      return FALSE;
+    }
+
+    return $this->get('image')->entity;
   }
 }

@@ -14,16 +14,7 @@ use Drupal\meta_entity\Entity\MetadataType;
  * Token handling service. Uses core token service or contributed Token.
  */
 class FormHelper {
-
-  protected static $allowedEntityTypes = [
-    'node_type' => 'Node type',
-    'taxonomy_vocabulary' => 'Taxonomy vocabulary',
-  ];
-
-  public static $mappedInstances = [
-    'node_type' => 'node',
-    'taxonomy_vocabulary' => 'taxonomy_term',
-  ];
+  use SupportTrait;
 
   protected static $allowedFormOperations = [
     'default',
@@ -51,16 +42,6 @@ class FormHelper {
    * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $currentUser;
-
-  /**
-   * @var string|null
-   */
-  protected $entityCategory;
-
-  /**
-   * @var string
-   */
-  protected $entityTypeId;
 
   /**
    * FormHelper constructor.
@@ -106,37 +87,6 @@ class FormHelper {
   }
 
   /**
-   * Checks if this particular form is a bundle form, or a bundle instance form
-   * and gathers sitemap settings from the database.
-   *
-   * @return bool
-   *   TRUE if this is a bundle or bundle instance form, FALSE otherwise.
-   */
-  protected function getEntityDataFromFormEntity() {
-    $form_entity = $this->getFormEntity();
-
-    if ($form_entity !== FALSE) {
-      $entity_type_id = $form_entity->getEntityTypeId();
-      $entity_types = self::$allowedEntityTypes;
-      if (isset($entity_types[$entity_type_id])) {
-        $this->setEntityCategory('instance');
-      }
-
-      switch ($this->getEntityCategory()) {
-        case 'instance':
-          $this->setEntityTypeId($entity_type_id);
-          $this->setBundleName($form_entity->id());
-          break;
-
-        default:
-          return FALSE;
-      }
-      return TRUE;
-    }
-    return FALSE;
-  }
-
-  /**
    * Gets the object entity of the form if available.
    *
    * @return \Drupal\Core\Entity\Entity|false
@@ -154,71 +104,6 @@ class FormHelper {
     return FALSE;
   }
 
-  /**
-   * @return null|string
-   */
-  public function getEntityCategory() {
-    return $this->entityCategory;
-  }
-
-  /**
-   * @param string $entity_category
-   *
-   * @return $this
-   */
-  public function setEntityCategory($entity_category) {
-    $this->entityCategory = $entity_category;
-    return $this;
-  }
-
-  /**
-   * @param string $bundle_name
-   *
-   * @return $this
-   */
-  public function setBundleName($bundle_name) {
-    $this->bundleName = $bundle_name;
-    return $this;
-  }
-
-  /**
-   * @return bool
-   */
-  protected function supports() {
-
-    // Do not alter the form if user lacks certain permissions.
-    if (!$this->currentUser->hasPermission('administer metadata')) {
-      return FALSE;
-    }
-
-    // Do not alter the form if it is irrelevant to sitemap generation.
-    elseif (empty($this->getEntityCategory())) {
-      return FALSE;
-    }
-
-    if (!isset(self::$allowedEntityTypes[$this->getEntityTypeId()])) {
-      return FALSE;
-    }
-
-    return TRUE;
-  }
-
-  /**
-   * @return string
-   */
-  public function getEntityTypeId() {
-    return $this->entityTypeId;
-  }
-
-  /**
-   * @param string $entity_type_id
-   *
-   * @return $this
-   */
-  public function setEntityTypeId($entity_type_id) {
-    $this->entityTypeId = $entity_type_id;
-    return $this;
-  }
 
   /**
    * @param \Drupal\Core\Form\FormStateInterface $form_state
@@ -240,42 +125,6 @@ class FormHelper {
     $defaults = $this->loadDefaults();
     $defaults->overwriteDefaults($new_values);
     $defaults->save();
-  }
-
-  /**
-   * Returns the metadata defaults entity.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface|static
-   */
-  protected function loadDefaults() {
-    $config_key = $this->getConfigKey();
-    $default = MetadataDefaults::load($config_key);
-    if (!$default) {
-      $default = MetadataDefaults::create(['id' => $config_key]);
-    }
-
-    return $default;
-  }
-
-  /**
-   * Returns the config key of this object.
-   *
-   * @return string
-   */
-  public function getConfigKey() {
-    $key = [];
-    $key[] = $this->getEntityCategory();
-    $key[] = $this->getEntityTypeId();
-    $key[] = $this->getBundleName();
-
-    return implode('.', $key);
-  }
-
-  /**
-   * @return string
-   */
-  public function getBundleName() {
-    return $this->bundleName;
   }
 
   /**
@@ -358,6 +207,59 @@ class FormHelper {
       $this->entityManager = \Drupal::entityManager();
     }
     return $this->entityManager;
+  }
+
+  /**
+   * @return bool
+   */
+  protected function supports() {
+
+    // Do not alter the form if user lacks certain permissions.
+    if (!$this->currentUser->hasPermission('administer metadata')) {
+      return FALSE;
+    }
+
+    // Do not alter the form if it is irrelevant to sitemap generation.
+    elseif (empty($this->getEntityCategory())) {
+      return FALSE;
+    }
+
+    if (!isset(self::$allowedEntityTypes[$this->getEntityTypeId()])) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Checks if this particular form is a bundle form, or a bundle instance form
+   * and gathers sitemap settings from the database.
+   *
+   * @return bool
+   *   TRUE if this is a bundle or bundle instance form, FALSE otherwise.
+   */
+  protected function getEntityDataFromFormEntity() {
+    $form_entity = $this->getFormEntity();
+
+    if ($form_entity !== FALSE) {
+      $entity_type_id = $form_entity->getEntityTypeId();
+      $entity_types = self::$allowedEntityTypes;
+      if (isset($entity_types[$entity_type_id])) {
+        $this->setEntityCategory('instance');
+      }
+
+      switch ($this->getEntityCategory()) {
+        case 'instance':
+          $this->setEntityTypeId($entity_type_id);
+          $this->setBundleName($form_entity->id());
+          break;
+
+        default:
+          return FALSE;
+      }
+      return TRUE;
+    }
+    return FALSE;
   }
 
 }

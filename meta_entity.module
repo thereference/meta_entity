@@ -120,41 +120,27 @@ function meta_entity_metadata_settings_submit(
 /**
  * Implements template_preprocess_html().
  */
-function meta_entity_preprocess_html(&$variables) {
+function meta_entity_page_attachments(array &$attachments) {
   if (!meta_entity_is_current_route_supported()) {
     return;
   }
+  $meta_data_attachments = drupal_static('meta_entity_attachments');
+  if (is_null($meta_data_attachments)) {
+    $meta_data_attachments = meta_entity_get_tags_from_route();
 
-  $attachments = drupal_static('metadata_attachments');
-  if (is_null($attachments)) {
-    $attachments = metatag_get_tags_from_route();
-
-
-
+    // If any metadata were found, append them.
+    if (!empty($meta_data_attachments)) {
+      if (empty($attachments['#attached'])) {
+        $attachments['#attached'] = [];
+      }
+      if (empty($attachments['#attached']['html_head'])) {
+        $attachments['#attached']['html_head'] = [];
+      }
+      foreach ($meta_data_attachments as $item) {
+        $attachments['#attached']['html_head'][] = $item;
+      }
+    }
   }
-
-//  if (!$attachments) {
-//    return;
-//  }
-//
-//  // Load the page title.
-//  if (!empty($attachments['#attached']['html_head'])) {
-//    foreach ($attachments['#attached']['html_head'] as $key => $attachment) {
-//      if (!empty($attachment[1]) && $attachment[1] == 'title') {
-//        // It's safe to access the value directly because it was already
-//        // processed in MetatagManager::generateElements().
-//        $variables['head_title_array'] = [];
-//        // Empty head_title to avoid the site name and slogan to be appended to
-//        // the meta title.
-//        $variables['head_title'] = [];
-//        $variables['head_title']['title'] = html_entity_decode($attachment[0]['#attributes']['content'], ENT_QUOTES);
-//        // Original:
-//        // $variables['head_title_array']['title'] = $attachment[0]['#attributes']['content'];
-//        // $variables['head_title'] = implode(' | ', $variables['head_title_array']);
-//        break;
-//      }
-//    }
-//  }
 }
 
 /**
@@ -179,4 +165,54 @@ function meta_entity_is_current_route_supported() {
   }
 
   return TRUE;
+}
+
+/**
+ * Load the meta tags by processing the route parameters.
+ *
+ * @return mixed
+ *   Array of metatags or NULL.
+ */
+function meta_entity_get_tags_from_route() {
+  $manager = \Drupal::service('meta_entity.manager');
+
+  $metadata = [];
+
+  // @todo set site wide defaults.
+
+  // Then, set tag overrides for this particular entity.
+  $entity = meta_entity_get_route_entity();
+
+  if (!empty($entity)) {
+    foreach ($manager->tagsFromEntity($entity) as $tag => $data) {
+      $metadata[$tag] = $data;
+    }
+  }
+
+  $elements = $manager->generateElements($metadata, $entity);
+
+  Drupal::moduleHandler()->alter('meta_entity_get_tags_from_route', $elements);
+
+  return $elements;
+}
+
+/**
+ * Returns the entity of the current route.
+ *
+ * @return EntityInterface
+ *   The entity or NULL if this is not an entity route.
+ */
+function meta_entity_get_route_entity() {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Look for a canonical entity view page, e.g. node/{nid}, taxonomy/term/{tid}, etc.
+  $matches = [];
+  preg_match('/entity\.(.*)\.canonical/', $route_name, $matches);
+  if (!empty($matches[1])) {
+    $entity_type = $matches[1];
+    return $route_match->getParameter($entity_type);
+  }
+
+  return NULL;
 }
