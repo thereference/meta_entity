@@ -183,7 +183,7 @@ function meta_entity_get_tags_from_route() {
   // Then, set tag overrides for this particular entity.
   $entity = meta_entity_get_route_entity();
 
-  if (!empty($entity)) {
+  if (!empty($entity) && is_subclass_of($entity, 'ContentEntity')) {
     foreach ($manager->tagsFromEntity($entity) as $tag => $data) {
       $metadata[$tag] = $data;
     }
