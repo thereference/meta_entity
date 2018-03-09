@@ -72,8 +72,9 @@ class MetadataWidget extends InlineEntityFormSimple {
       if ($uuid && ($file = \Drupal::entityManager()->loadEntityByUuid('file', $uuid))) {
         $values['image'] = $file;
       }
-
-      $new_element['inline_entity_form']['#default_value'] = $storage->create($values);
+      if (isset($values[$bundle_key])) {
+        $new_element['inline_entity_form']['#default_value'] = $storage->create($values);
+      }
     }
 
     return $new_element;
