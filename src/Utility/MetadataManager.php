@@ -209,6 +209,7 @@ class MetadataManager implements MetadataManagerInterface {
    * @return array
    */
   private function getMetadataEntityTags(MetadataInterface $metadata) {
+    $tags = [];
     foreach ($metadata->getFields() as $key => $value) {
       $tags[$key] = $metadata->get($key)->getString();
     }
