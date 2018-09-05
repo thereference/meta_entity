@@ -227,6 +227,16 @@ class MetadataManager implements MetadataManagerInterface {
       ];
     }
 
+    $canonical = $metadata->getCanonical();
+    if ($canonical) {
+      $node = reset($canonical->referencedEntities());
+      $value = $node ? $node->toUrl() : FALSE;
+      $tags['canonical'] = [
+        'value' => $value,
+        'token_replaceable' => FALSE,
+      ];
+    }
+
     $file = $metadata->getImage();
     if ($file) {
       $tags['image'] =
