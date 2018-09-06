@@ -74,6 +74,22 @@ class Metadata extends ContentEntityBase implements MetadataInterface {
         ->setDisplayConfigurable('form', TRUE);
     }
 
+    $fields['canonical'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(new TranslatableMarkup('Canonical'))
+      ->setRequired(FALSE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions(
+        'form',
+        [
+          'type' => 'entity_autocomplete',
+          'weight' => 10,
+          'settings' => [
+            'display_label' => TRUE,
+          ],
+        ]
+      )
+      ->setDisplayConfigurable('form', TRUE);
+
     $fields['image'] = BaseFieldDefinition::create('image')
       ->setLabel(new TranslatableMarkup('Image'))
       ->setRequired(FALSE)
@@ -103,6 +119,13 @@ class Metadata extends ContentEntityBase implements MetadataInterface {
    */
   public function getDescription() {
     return $this->get('description')->getString();
+  }
+
+  /**
+   * Get the description that is filled in for this entity.
+   */
+  public function getCanonical() {
+    return $this->get('canonical');
   }
 
   /**
