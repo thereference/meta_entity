@@ -229,7 +229,8 @@ class MetadataManager implements MetadataManagerInterface {
 
     $canonical = $metadata->getCanonical();
     if ($canonical) {
-      $node = reset($canonical->referencedEntities());
+      $ref_entities = $canonical->referencedEntities();
+      $node = reset($ref_entities);
       $value = $node ? $node->toUrl() : FALSE;
       $tags['canonical'] = [
         'value' => $value,
