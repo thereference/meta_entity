@@ -169,7 +169,7 @@ class MetadataManager implements MetadataManagerInterface {
 
     $uuid = $defaults->getDefault('image');
     /** @var \Drupal\file\Entity\File $file */
-    $file = \Drupal::entityManager()->loadEntityByUuid('file', $uuid);
+    $file = \Drupal::entityTypeManager()->loadEntityByUuid('file', $uuid);
     if ($file) {
       $tags['image'] =
         [

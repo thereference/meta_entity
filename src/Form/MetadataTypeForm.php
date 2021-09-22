@@ -84,11 +84,11 @@ class MetadataTypeForm extends BundleEntityFormBase {
     // Provide a message for the user and redirect them back to the collection.
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label %content_entity_id entity type.', $message_params));
+        \Drupal::messenger()->addMessage($this->t('Created the %label %content_entity_id entity type.', $message_params));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label %content_entity_id entity type.', $message_params));
+        \Drupal::messenger()->addMessage($this->t('Saved the %label %content_entity_id entity type.', $message_params));
     }
 
     $form_state->setRedirectUrl($entity_type->toUrl('collection'));

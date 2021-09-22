@@ -89,7 +89,7 @@ class FormHelper {
   /**
    * Gets the object entity of the form if available.
    *
-   * @return \Drupal\Core\Entity\Entity|false
+   * @return \Drupal\Core\Entity\EntityBase|false
    *   Entity or FALSE if non-existent or if form operation is
    *   'delete'.
    */
@@ -200,11 +200,11 @@ class FormHelper {
   /**
    * Gets the entity manager.
    *
-   * @return \Drupal\Core\Entity\EntityManagerInterface
+   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected function getEntityManager() {
     if (!isset($this->entityManager)) {
-      $this->entityManager = \Drupal::entityManager();
+      $this->entityManager = \Drupal::entityTypeManager();
     }
     return $this->entityManager;
   }
