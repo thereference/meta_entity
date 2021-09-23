@@ -42,7 +42,7 @@ class MetadataForm extends ContentEntityForm {
       ];
 
       $this->logger('content')->notice('@type: updated %title.', $context);
-      drupal_set_message(t('@type %title has been updated.', $t_args));
+      \Drupal::messenger()->addMessage(t('@type %title has been updated.', $t_args));
     }
 
     if ($settings->id()) {
@@ -51,7 +51,7 @@ class MetadataForm extends ContentEntityForm {
     else {
       // In the unlikely case something went wrong on save, the settings will be
       // rebuilt and settings form redisplayed the same way as in preview.
-      drupal_set_message(t('The post could not be saved.'), 'error');
+      \Drupal::messenger()->addMessage(t('The post could not be saved.'), 'error');
       $form_state->setRebuild();
     }
   }

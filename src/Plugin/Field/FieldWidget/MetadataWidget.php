@@ -7,7 +7,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\inline_entity_form\Plugin\Field\FieldWidget\InlineEntityFormSimple;
 use Drupal\meta_entity\Entity\MetadataDefaults;
-
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 /**
  * Metadata inline entity widget.
  *
@@ -69,7 +69,7 @@ class MetadataWidget extends InlineEntityFormSimple {
       // Convert the stored UUID to a FID.
       $uuid = $defaults->getDefault('image');
 
-      if ($uuid && ($file = \Drupal::entityManager()->loadEntityByUuid('file', $uuid))) {
+      if ($uuid && ($file = \Drupal::entityTypeManager()->loadEntityByUuid('file', $uuid))) {
         $values['image'] = $file;
       }
 
